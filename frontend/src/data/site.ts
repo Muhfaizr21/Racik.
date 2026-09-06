@@ -1,5 +1,6 @@
 export const navItems = [
   { label: 'Beranda', href: '#hero' },
+  { label: 'Kubah Formula', href: '#workstation-owner' },
   { label: 'Scent Studio', href: '#studio' },
   { label: 'Alur Lab', href: '#workflow' },
   { label: 'Anti-Fake', href: '#passport' },

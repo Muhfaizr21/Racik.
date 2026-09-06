@@ -70,6 +70,26 @@ func (ctrl *FormulaController) GetFormulaDetail(c *gin.Context) {
 	views.RenderSuccess(c, http.StatusOK, "Detail formula master", formula)
 }
 
+// CreateFormula membuat formula master baru di database PostgreSQL
+func (ctrl *FormulaController) CreateFormula(c *gin.Context) {
+	var formula models.Formula
+	if err := c.ShouldBindJSON(&formula); err != nil {
+		views.RenderBadRequest(c, "Format input formula tidak valid", err.Error())
+		return
+	}
+
+	if formula.ID == "" {
+		formula.ID = "FML-" + strconv.FormatInt(c.GetInt64("timestamp"), 10)
+	}
+
+	if err := ctrl.formulaService.CreateFormula(&formula); err != nil {
+		views.RenderInternalError(c, "Gagal menyimpan formula ke database: "+err.Error())
+		return
+	}
+
+	views.RenderSuccess(c, http.StatusCreated, "Formula master berhasil didaftarkan ke kubah PostgreSQL", formula)
+}
+
 // CalculateBatchProjection simulasi perhitungan HPP dan hari maserasi
 func (ctrl *FormulaController) CalculateBatchProjection(c *gin.Context) {
 	concentrationStr := c.DefaultQuery("concentration_pct", "24")

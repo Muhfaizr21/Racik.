@@ -54,6 +54,7 @@ func SetupRouter(cfg *config.Config, db *gorm.DB) *gin.Engine {
 		formulas.Use(middlewares.RequireRoles(models.RoleOwner, models.RoleLabTech))
 		{
 			formulas.GET("", formulaCtrl.ListFormulas)
+			formulas.POST("", formulaCtrl.CreateFormula)
 			formulas.GET("/:id", formulaCtrl.GetFormulaDetail)
 			formulas.GET("/calculate-batch", formulaCtrl.CalculateBatchProjection)
 		}

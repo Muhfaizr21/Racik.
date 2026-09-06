@@ -70,3 +70,8 @@ func (s *FormulaService) GetMaskedFormulaForLab(id string, batchVolumeL float64)
 
 	return &masked, nil
 }
+
+// CreateFormula menyimpan formula baru ke database PostgreSQL
+func (s *FormulaService) CreateFormula(f *models.Formula) error {
+	return s.db.Create(f).Error
+}

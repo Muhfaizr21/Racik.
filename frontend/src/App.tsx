@@ -18,6 +18,7 @@ import { ContactCTA } from './components/ContactCTA'
 import { Footer } from './components/Footer'
 import { SpotLightBg } from './components/SpotLightBg'
 import { LoginModal } from './components/LoginModal'
+import { OwnerDashboard } from './features/owner'
 import { useAuth } from './hooks/useAuth'
 
 export default function App() {
@@ -78,6 +79,11 @@ export default function App() {
         currentUser={currentUser}
         onOpenLogin={openAuthModal}
       />
+
+      {/* Role 1: Master Perfumer / Owner Workstation */}
+      <section id="workstation-owner" className="relative py-12 md:py-20 max-w-7xl mx-auto px-6 scroll-mt-24">
+        <OwnerDashboard />
+      </section>
 
       <ComparisonTable />
       <RoiCalculator />
