@@ -3,15 +3,25 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { navItems } from '../data/site'
 import { Logo } from './Logo'
 import type { AuthUser } from '../types/auth'
+import type { AppRoute } from '../hooks/useRoute'
 
 interface NavbarProps {
   scrolled: boolean
   currentUser: AuthUser | null
+  currentRoute?: AppRoute
+  onNavigate?: (route: AppRoute, param?: string) => void
   onOpenLogin: () => void
 }
 
-export function Navbar({ scrolled, currentUser, onOpenLogin }: NavbarProps) {
+export function Navbar({ scrolled, currentUser, currentRoute, onNavigate, onOpenLogin }: NavbarProps) {
   const [open, setOpen] = useState(false)
+
+  const handleItemClick = (e: React.MouseEvent, route: AppRoute, _href: string) => {
+    if (onNavigate) {
+      e.preventDefault()
+      onNavigate(route)
+    }
+  }
 
   return (
     <motion.nav
@@ -24,22 +34,43 @@ export function Navbar({ scrolled, currentUser, onOpenLogin }: NavbarProps) {
       className="fixed top-0 left-0 right-0 z-40 border-b backdrop-blur-md"
     >
       <div className="max-w-7xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between gap-6">
-        <a href="#hero" className="inline-flex items-center shrink-0" aria-label="Racik home">
+        <a
+          href="#/"
+          onClick={(e) => handleItemClick(e, 'home', '#/')}
+          className="inline-flex items-center shrink-0 cursor-pointer"
+          aria-label="Racik home"
+        >
           <Logo size="md" />
         </a>
 
         {/* Desktop Navigation Links */}
-        <div className="hidden md:flex items-center gap-6 lg:gap-8 shrink-0">
-          {navItems.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className="text-sm font-medium text-neutral-400 hover:text-[#D4AF37] transition-colors duration-300 relative group/nav whitespace-nowrap"
-            >
-              {item.label}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#D4AF37] transition-all duration-300 group-hover/nav:w-full" />
-            </a>
-          ))}
+        <div className="hidden md:flex items-center gap-5 lg:gap-7 shrink-0">
+          {navItems.map((item) => {
+            const isActive = currentRoute === item.route
+
+            return (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={(e) => handleItemClick(e, item.route, item.href)}
+                className={`text-sm font-medium transition-all duration-300 relative group/nav whitespace-nowrap cursor-pointer py-1 ${
+                  isActive
+                    ? 'text-[#D4AF37] font-semibold'
+                    : 'text-neutral-400 hover:text-[#D4AF37]'
+                }`}
+              >
+                <span>{item.label}</span>
+                {isActive ? (
+                  <motion.span
+                    layoutId="activeNavIndicator"
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#D4AF37] shadow-[0_0_8px_#D4AF37]"
+                  />
+                ) : (
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#D4AF37] transition-all duration-300 group-hover/nav:w-full" />
+                )}
+              </a>
+            )
+          })}
         </div>
 
         {/* Action Buttons Group */}
@@ -47,9 +78,9 @@ export function Navbar({ scrolled, currentUser, onOpenLogin }: NavbarProps) {
           {currentUser ? (
             <button
               type="button"
-              onClick={onOpenLogin}
+              onClick={() => onNavigate ? onNavigate('admin') : onOpenLogin()}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#1D1B19] border border-[#D4AF37]/40 hover:border-[#D4AF37] transition-all cursor-pointer shadow-sm group whitespace-nowrap"
-              title="Buka Dashboard Superadmin"
+              title="Buka Workstation Superadmin OS"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34D399]" />
               <span className="text-xs font-semibold text-neutral-200 group-hover:text-white">
@@ -73,12 +104,13 @@ export function Navbar({ scrolled, currentUser, onOpenLogin }: NavbarProps) {
             </button>
           )}
 
-          <a
-            href="#contact"
-            className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#D4AF37] text-[#1A1A1A] hover:bg-[#e6c34a] transition-colors shadow-[0_0_15px_rgba(212,175,55,0.2)] whitespace-nowrap"
+          <button
+            type="button"
+            onClick={() => onNavigate?.('pricing')}
+            className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#D4AF37] text-[#1A1A1A] hover:bg-[#e6c34a] transition-colors shadow-[0_0_15px_rgba(212,175,55,0.2)] whitespace-nowrap cursor-pointer"
           >
             Mulai Sekarang
-          </a>
+          </button>
         </div>
 
         {/* Mobile Menu Trigger */}
@@ -120,8 +152,15 @@ export function Navbar({ scrolled, currentUser, onOpenLogin }: NavbarProps) {
                 <a
                   key={item.label}
                   href={item.href}
-                  onClick={() => setOpen(false)}
-                  className="text-sm font-medium text-neutral-300 hover:text-[#D4AF37] transition-colors py-1.5"
+                  onClick={(e) => {
+                    setOpen(false)
+                    handleItemClick(e, item.route, item.href)
+                  }}
+                  className={`text-sm font-medium py-1.5 transition-colors ${
+                    currentRoute === item.route
+                      ? 'text-[#D4AF37] font-bold'
+                      : 'text-neutral-300 hover:text-[#D4AF37]'
+                  }`}
                 >
                   {item.label}
                 </a>
@@ -132,7 +171,11 @@ export function Navbar({ scrolled, currentUser, onOpenLogin }: NavbarProps) {
                   type="button"
                   onClick={() => {
                     setOpen(false)
-                    onOpenLogin()
+                    if (currentUser && onNavigate) {
+                      onNavigate('admin')
+                    } else {
+                      onOpenLogin()
+                    }
                   }}
                   className="w-full py-2.5 rounded-lg text-sm font-semibold border border-[#D4AF37]/50 text-[#D4AF37] hover:bg-[#D4AF37]/10 transition-colors flex items-center justify-center gap-2"
                 >
@@ -143,13 +186,16 @@ export function Navbar({ scrolled, currentUser, onOpenLogin }: NavbarProps) {
                   <span>{currentUser ? `Workstation: ${currentUser.name.split(' ')[0]}` : 'Masuk ke Portal OS'}</span>
                 </button>
 
-                <a
-                  href="#contact"
-                  onClick={() => setOpen(false)}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false)
+                    onNavigate?.('pricing')
+                  }}
                   className="w-full py-2.5 rounded-lg text-center text-sm font-semibold bg-[#D4AF37] text-[#1A1A1A] hover:bg-[#e6c34a] transition-colors"
                 >
                   Mulai Sekarang
-                </a>
+                </button>
               </div>
             </div>
           </motion.div>

@@ -1,9 +1,15 @@
-export const navItems = [
-  { label: 'Beranda', href: '#hero' },
-  { label: 'Studio Lab', href: '#studio' },
-  { label: 'Alur Kerja', href: '#workflow' },
-  { label: 'Anti-Fake', href: '#passport' },
-  { label: 'Harga', href: '#pricing' },
+export interface NavItem {
+  label: string
+  href: string
+  route: 'home' | 'studio' | 'workflow' | 'passport' | 'pricing' | 'admin'
+}
+
+export const navItems: NavItem[] = [
+  { label: 'Beranda', href: '#/', route: 'home' },
+  { label: 'Studio Lab', href: '#/studio', route: 'studio' },
+  { label: 'Alur Kerja', href: '#/workflow', route: 'workflow' },
+  { label: 'Anti-Fake Passport', href: '#/passport', route: 'passport' },
+  { label: 'Harga & ROI', href: '#/pricing', route: 'pricing' },
 ]
 
 export const partnerBrands = [

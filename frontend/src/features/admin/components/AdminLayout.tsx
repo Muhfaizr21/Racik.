@@ -7,6 +7,7 @@ import { AdminInfoBoxes } from './AdminInfoBoxes'
 import { AdminVatTable } from './AdminVatTable'
 import { AdminInventoryTable } from './AdminInventoryTable'
 import { OwnerDashboard } from '../../owner'
+import { ScentPassport } from '../../../components/ScentPassport'
 import { useOwnerWorkstation } from '../../owner/hooks/useOwnerWorkstation'
 
 interface AdminLayoutProps {
@@ -112,39 +113,8 @@ export function AdminLayout({
           )}
 
           {activeTab === 'passports' && (
-            <div className="rounded-2xl bg-[#161514] border border-white/10 p-6 space-y-4">
-              <div className="flex items-center justify-between pb-4 border-b border-white/10">
-                <div>
-                  <h3 className="text-base font-bold text-white font-display">
-                    Audit Sertifikat Digital Scent Passport
-                  </h3>
-                  <p className="text-xs text-neutral-400">
-                    Pelacakan kode hash QR dan NFC tag botol yang terdaftar di database PostgreSQL.
-                  </p>
-                </div>
-                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30">
-                  1,840 Botol Terverifikasi
-                </span>
-              </div>
-
-              <div className="p-4 rounded-xl bg-[#1A1918] border border-white/5 font-mono text-xs space-y-2">
-                <div className="flex justify-between text-neutral-400">
-                  <span>Sample QR Hash:</span>
-                  <span className="text-[#D4AF37]">2609-EDP-042</span>
-                </div>
-                <div className="flex justify-between text-neutral-400">
-                  <span>Varian Parfum:</span>
-                  <span className="text-white">Santal Royale Extrait (50ml)</span>
-                </div>
-                <div className="flex justify-between text-neutral-400">
-                  <span>Nomor Seri Botol:</span>
-                  <span className="text-white">042/200 &bull; Lot: LOT-202609-SNT-01</span>
-                </div>
-                <div className="flex justify-between text-neutral-400">
-                  <span>Status Keaslian:</span>
-                  <span className="text-emerald-400 font-bold">TERVERIFIKASI ASLI (PostgreSQL)</span>
-                </div>
-              </div>
+            <div className="space-y-6">
+              <ScentPassport />
             </div>
           )}
 
