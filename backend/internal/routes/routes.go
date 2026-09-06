@@ -25,7 +25,7 @@ func SetupRouter(cfg *config.Config, db *gorm.DB) *gin.Engine {
 	formulaService := services.NewFormulaService(db, calcService)
 
 	healthCtrl := controllers.NewHealthController()
-	authCtrl := controllers.NewAuthController()
+	authCtrl := controllers.NewAuthController(db)
 	formulaCtrl := controllers.NewFormulaController(formulaService, calcService)
 	materialCtrl := controllers.NewRawMaterialController(db)
 	batchCtrl := controllers.NewBatchController(db)

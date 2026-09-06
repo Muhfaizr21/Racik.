@@ -7,12 +7,15 @@ import (
 	"github.com/Muhfaizr21/Racik/backend/internal/models"
 	"github.com/Muhfaizr21/Racik/backend/internal/views"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-type AuthController struct{}
+type AuthController struct {
+	db *gorm.DB
+}
 
-func NewAuthController() *AuthController {
-	return &AuthController{}
+func NewAuthController(db *gorm.DB) *AuthController {
+	return &AuthController{db: db}
 }
 
 func (a *AuthController) Login(c *gin.Context) {
@@ -22,61 +25,66 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	// Contoh akun demo per role
 	var user models.User
-	var token string
+	var found bool
 
-	switch req.Email {
-	case "owner@racik.id":
-		user = models.User{
-			ID:        "USR-001",
-			Name:      "Faiz Ramadhan (Master Perfumer)",
-			Email:     req.Email,
-			Role:      models.RoleOwner,
-			CreatedAt: time.Now(),
+	// 1. Coba cari user dari database PostgreSQL
+	if a.db != nil {
+		if err := a.db.Where("email = ?", req.Email).First(&user).Error; err == nil {
+			found = true
 		}
-		token = "bearer-token-owner"
-	case "lab@racik.id":
-		user = models.User{
-			ID:        "USR-002",
-			Name:      "Budi Santoso (Lab Technician)",
-			Email:     req.Email,
-			Role:      models.RoleLabTech,
-			CreatedAt: time.Now(),
-		}
-		token = "bearer-token-labtech"
-	case "warehouse@racik.id":
-		user = models.User{
-			ID:        "USR-003",
-			Name:      "Siti Rahma (Kepala Gudang)",
-			Email:     req.Email,
-			Role:      models.RoleWarehouse,
-			CreatedAt: time.Now(),
-		}
-		token = "bearer-token-warehouse"
-	case "cashier@racik.id":
-		user = models.User{
-			ID:        "USR-004",
-			Name:      "Dewi Lestari (Kasir Butik)",
-			Email:     req.Email,
-			Role:      models.RoleCashier,
-			OutletID:  "OUTLET-SENOPATI-01",
-			CreatedAt: time.Now(),
-		}
-		token = "bearer-token-cashier"
-	default:
-		// Default mock login
-		user = models.User{
-			ID:        "USR-DEFAULT",
-			Name:      "User Demo",
-			Email:     req.Email,
-			Role:      models.RoleOwner,
-			CreatedAt: time.Now(),
-		}
-		token = "bearer-token-owner"
 	}
 
-	views.RenderSuccess(c, http.StatusOK, "Login berhasil", models.LoginResponse{
+	// 2. Fallback akun demo terverifikasi jika belum terdaftar di database
+	if !found {
+		switch req.Email {
+		case "owner@racik.id":
+			user = models.User{
+				ID:        "USR-001",
+				Name:      "Faiz Ramadhan (Master Perfumer)",
+				Email:     req.Email,
+				Role:      models.RoleOwner,
+				CreatedAt: time.Now(),
+			}
+		case "lab@racik.id":
+			user = models.User{
+				ID:        "USR-002",
+				Name:      "Budi Santoso (Lab Technician)",
+				Email:     req.Email,
+				Role:      models.RoleLabTech,
+				CreatedAt: time.Now(),
+			}
+		case "warehouse@racik.id":
+			user = models.User{
+				ID:        "USR-003",
+				Name:      "Siti Rahma (Kepala Gudang)",
+				Email:     req.Email,
+				Role:      models.RoleWarehouse,
+				CreatedAt: time.Now(),
+			}
+		case "cashier@racik.id":
+			user = models.User{
+				ID:        "USR-004",
+				Name:      "Dewi Lestari (Kasir Butik)",
+				Email:     req.Email,
+				Role:      models.RoleCashier,
+				OutletID:  "OUTLET-SENOPATI-01",
+				CreatedAt: time.Now(),
+			}
+		default:
+			user = models.User{
+				ID:        "USR-DEMO",
+				Name:      "User Operasional",
+				Email:     req.Email,
+				Role:      models.RoleOwner,
+				CreatedAt: time.Now(),
+			}
+		}
+	}
+
+	token := "bearer-token-" + string(user.Role) + "-" + user.ID
+
+	views.RenderSuccess(c, http.StatusOK, "Login berhasil ke Racik Parfumerie OS", models.LoginResponse{
 		Token: token,
 		User:  user,
 	})
