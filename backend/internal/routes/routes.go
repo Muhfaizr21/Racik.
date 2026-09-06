@@ -7,9 +7,10 @@ import (
 	"github.com/Muhfaizr21/Racik/backend/internal/models"
 	"github.com/Muhfaizr21/Racik/backend/internal/services"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func SetupRouter(cfg *config.Config) *gin.Engine {
+func SetupRouter(cfg *config.Config, db *gorm.DB) *gin.Engine {
 	if cfg.AppEnv == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -21,14 +22,14 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 
 	// Dependency Injection
 	calcService := services.NewCalculationService()
-	formulaService := services.NewFormulaService(calcService)
+	formulaService := services.NewFormulaService(db, calcService)
 
 	healthCtrl := controllers.NewHealthController()
 	authCtrl := controllers.NewAuthController()
 	formulaCtrl := controllers.NewFormulaController(formulaService, calcService)
-	materialCtrl := controllers.NewRawMaterialController()
-	batchCtrl := controllers.NewBatchController()
-	passportCtrl := controllers.NewPassportController()
+	materialCtrl := controllers.NewRawMaterialController(db)
+	batchCtrl := controllers.NewBatchController(db)
+	passportCtrl := controllers.NewPassportController(db)
 
 	api := r.Group("/api/v1")
 	{

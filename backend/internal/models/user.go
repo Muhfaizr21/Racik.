@@ -13,11 +13,11 @@ const (
 )
 
 type User struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	Role      Role      `json:"role"`
-	OutletID  string    `json:"outlet_id,omitempty"`
+	ID        string    `json:"id" gorm:"primaryKey;size:64"`
+	Name      string    `json:"name" gorm:"size:128;not null"`
+	Email     string    `json:"email" gorm:"size:128;uniqueIndex;not null"`
+	Role      Role      `json:"role" gorm:"size:32;not null"`
+	OutletID  string    `json:"outlet_id,omitempty" gorm:"size:64"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

@@ -2,56 +2,34 @@ package controllers
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/Muhfaizr21/Racik/backend/internal/models"
 	"github.com/Muhfaizr21/Racik/backend/internal/views"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type PassportController struct {
-	passports map[string]*models.DigitalScentPassport
+	db *gorm.DB
 }
 
-func NewPassportController() *PassportController {
-	registry := map[string]*models.DigitalScentPassport{
-		"2609-EDP-042": {
-			ID:                 "PSP-001",
-			QRHash:             "2609-EDP-042",
-			NFCTagUID:          "04:7F:4B:99:C2:A1:80",
-			LotNumber:          "LOT-202609-SNT-01",
-			BottleSerialNumber: "042/200",
-			BrandName:          "MAISON DE PARFUM",
-			VariantName:        "Santal Royale Extrait",
-			ConcentrationType:  "Extrait de Parfum (24% Concentree)",
-			TopNotesSummary:    "Bergamot Reggio Calabria, Pink Pepper CO2",
-			HeartNotesSummary:  "Rosa Damascena Absolute, Orris Butter",
-			BaseNotesSummary:   "Assam Oud, Mysore Sandalwood Oil, Ambroxan",
-			HarvestProvenance:  "Calabria (Italia) & Mysore (India) - Panen 2025",
-			MacerationDays:     32,
-			BottledDate:        time.Date(2026, 2, 18, 0, 0, 0, 0, time.UTC),
-			TotalScannedCount:  1,
-			IsAuthentic:        true,
-			DistributorOutlet:  "Official Flagship Butik Senopati Jakarta",
-			CreatedAt:          time.Now(),
-		},
-	}
-
-	return &PassportController{passports: registry}
+func NewPassportController(db *gorm.DB) *PassportController {
+	return &PassportController{db: db}
 }
 
-// VerifyByHash memverifikasi keaslian botol parfum untuk pembeli (Akses Publik / Customer)
+// VerifyByHash memverifikasi keaslian botol parfum untuk pembeli (Akses Publik via PostgreSQL)
 func (ctrl *PassportController) VerifyByHash(c *gin.Context) {
 	hash := c.Param("hash")
 
-	passport, exists := ctrl.passports[hash]
-	if !exists {
-		views.RenderNotFound(c, "Nomor seri / hash batch wewangian tidak terdaftar dalam kubah Racik")
+	var passport models.DigitalScentPassport
+	if err := ctrl.db.Where("qr_hash = ?", hash).First(&passport).Error; err != nil {
+		views.RenderNotFound(c, "Nomor seri / hash batch wewangian tidak terdaftar dalam kubah database Racik")
 		return
 	}
 
-	// Tambahkan jumlah pemindaian (anti-duplikasi)
+	// Increment total scan count & simpan ke PostgreSQL
+	ctrl.db.Model(&passport).Update("total_scanned_count", passport.TotalScannedCount+1)
 	passport.TotalScannedCount++
 
-	views.RenderSuccess(c, http.StatusOK, "Digital Scent Passport terverifikasi asli", passport)
+	views.RenderSuccess(c, http.StatusOK, "Digital Scent Passport terverifikasi asli dari PostgreSQL", passport)
 }

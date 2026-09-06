@@ -13,16 +13,16 @@ const (
 )
 
 type RawMaterial struct {
-	ID              string           `json:"id"`
-	Code            string           `json:"code"`             // Kode wadah / SKU (cth: ESS-BG-01)
-	Name            string           `json:"name"`             // Nama dagang (cth: Bergamot Calabria Cold-Pressed)
-	Category        MaterialCategory `json:"category"`
-	SpecificGravity float64          `json:"specific_gravity"` // Berat jenis g/ml (cth: 0.875)
-	StockGrams      float64          `json:"stock_grams"`      // Sisa stok dalam gram
-	CostPerGram     float64          `json:"cost_per_gram"`    // Biaya per gram (IDR)
-	SupplierName    string           `json:"supplier_name"`
-	LotNumber       string           `json:"lot_number"`
-	COANumber       string           `json:"coa_number"`
+	ID              string           `json:"id" gorm:"primaryKey;size:64"`
+	Code            string           `json:"code" gorm:"size:64;uniqueIndex;not null"` // Kode wadah / SKU
+	Name            string           `json:"name" gorm:"size:191;not null"`            // Nama dagang
+	Category        MaterialCategory `json:"category" gorm:"size:32;not null"`
+	SpecificGravity float64          `json:"specific_gravity" gorm:"type:numeric(6,4);not null"` // Berat jenis g/ml
+	StockGrams      float64          `json:"stock_grams" gorm:"type:numeric(12,2);default:0"`      // Sisa stok dalam gram
+	CostPerGram     float64          `json:"cost_per_gram" gorm:"type:numeric(12,2);default:0"`    // Biaya per gram (IDR)
+	SupplierName    string           `json:"supplier_name" gorm:"size:128"`
+	LotNumber       string           `json:"lot_number" gorm:"size:64"`
+	COANumber       string           `json:"coa_number" gorm:"size:64"`
 	ExpiryDate      time.Time        `json:"expiry_date"`
 	CreatedAt       time.Time        `json:"created_at"`
 	UpdatedAt       time.Time        `json:"updated_at"`
