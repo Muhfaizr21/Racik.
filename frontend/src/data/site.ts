@@ -1,13 +1,9 @@
 export const navItems = [
   { label: 'Beranda', href: '#hero' },
-  { label: 'Kubah Formula', href: '#workstation-owner' },
-  { label: 'Scent Studio', href: '#studio' },
-  { label: 'Alur Lab', href: '#workflow' },
+  { label: 'Studio Lab', href: '#studio' },
+  { label: 'Alur Kerja', href: '#workflow' },
   { label: 'Anti-Fake', href: '#passport' },
-  { label: 'Kalkulator ROI', href: '#calculator' },
-  { label: 'Dashboard', href: '#dashboard' },
   { label: 'Harga', href: '#pricing' },
-  { label: 'FAQ', href: '#faq' },
 ]
 
 export const partnerBrands = [

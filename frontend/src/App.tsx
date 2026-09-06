@@ -18,11 +18,13 @@ import { ContactCTA } from './components/ContactCTA'
 import { Footer } from './components/Footer'
 import { SpotLightBg } from './components/SpotLightBg'
 import { LoginModal } from './components/LoginModal'
-import { OwnerDashboard } from './features/owner'
+import { AdminLayout } from './features/admin'
 import { useAuth } from './hooks/useAuth'
 
 export default function App() {
   const [scrolled, setScrolled] = useState(false)
+  const [showPublicPreview, setShowPublicPreview] = useState(false)
+
   const {
     currentUser,
     isAuthModalOpen,
@@ -41,9 +43,58 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+
+
+  // 1. If user is logged in and not in public preview mode, render full AdminLTE Superadmin Dashboard!
+  if (currentUser && !showPublicPreview) {
+    return (
+      <>
+        {/* Global Feedback Toast */}
+        <AnimatePresence>
+          {feedbackToast && (
+            <motion.div
+              initial={{ opacity: 0, y: -20, x: '-50%' }}
+              animate={{ opacity: 1, y: 0, x: '-50%' }}
+              exit={{ opacity: 0, y: -20, x: '-50%' }}
+              className="fixed top-20 left-1/2 z-50 px-4 py-2 rounded-xl bg-[#1E1C1A] border border-[#D4AF37]/50 text-neutral-200 text-xs font-semibold shadow-2xl flex items-center gap-2"
+            >
+              <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-ping" />
+              <span>{feedbackToast}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AdminLayout
+          currentUser={currentUser}
+          onSwitchToLanding={() => setShowPublicPreview(true)}
+          onLogout={logout}
+        />
+      </>
+    )
+  }
+
+  // 2. Otherwise render public Landing Page (with an admin top bar if session is active)
   return (
     <div className="relative min-h-screen bg-[#141211] text-neutral-100 antialiased overflow-x-hidden selection:bg-[#D4AF37] selection:text-neutral-950">
       <SpotLightBg />
+
+      {/* Top Banner when user is previewing public store while logged in */}
+      {currentUser && showPublicPreview && (
+        <div className="sticky top-0 z-50 bg-[#D4AF37] text-neutral-950 px-6 py-2 flex items-center justify-between text-xs font-bold shadow-md">
+          <div className="flex items-center gap-2">
+            <span>👑 Sesi Superadmin: {currentUser.name} ({currentUser.role})</span>
+            <span className="hidden sm:inline">&bull; Database PostgreSQL racik Aktif</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowPublicPreview(false)}
+            className="px-3 py-1 rounded-lg bg-neutral-950 text-[#D4AF37] hover:bg-neutral-900 transition-colors flex items-center gap-1.5 cursor-pointer text-xs font-bold"
+          >
+            <span>Kembali ke Superadmin OS</span>
+            <span>➜</span>
+          </button>
+        </div>
+      )}
 
       {/* Global Feedback Toast */}
       <AnimatePresence>
@@ -79,11 +130,6 @@ export default function App() {
         currentUser={currentUser}
         onOpenLogin={openAuthModal}
       />
-
-      {/* Role 1: Master Perfumer / Owner Workstation */}
-      <section id="workstation-owner" className="relative py-12 md:py-20 max-w-7xl mx-auto px-6 scroll-mt-24">
-        <OwnerDashboard />
-      </section>
 
       <ComparisonTable />
       <RoiCalculator />

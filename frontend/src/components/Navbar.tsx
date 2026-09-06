@@ -23,31 +23,33 @@ export function Navbar({ scrolled, currentUser, onOpenLogin }: NavbarProps) {
       transition={{ duration: 0.35 }}
       className="fixed top-0 left-0 right-0 z-40 border-b backdrop-blur-md"
     >
-      <div className="max-w-7xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between">
-        <a href="#hero" className="inline-flex items-center" aria-label="Racik home">
+      <div className="max-w-7xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between gap-6">
+        <a href="#hero" className="inline-flex items-center shrink-0" aria-label="Racik home">
           <Logo size="md" />
         </a>
 
-        {/* Desktop Navigation Links & Actions */}
-        <div className="hidden md:flex items-center gap-7">
+        {/* Desktop Navigation Links */}
+        <div className="hidden md:flex items-center gap-6 lg:gap-8 shrink-0">
           {navItems.map((item) => (
             <a
               key={item.label}
               href={item.href}
-              className="text-sm font-medium text-neutral-400 hover:text-[#D4AF37] transition-colors duration-300 relative group/nav"
+              className="text-sm font-medium text-neutral-400 hover:text-[#D4AF37] transition-colors duration-300 relative group/nav whitespace-nowrap"
             >
               {item.label}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#D4AF37] transition-all duration-300 group-hover/nav:w-full" />
             </a>
           ))}
+        </div>
 
-          {/* Login / Active User Profile Button */}
+        {/* Action Buttons Group */}
+        <div className="hidden md:flex items-center gap-3 shrink-0">
           {currentUser ? (
             <button
               type="button"
               onClick={onOpenLogin}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#1D1B19] border border-[#D4AF37]/40 hover:border-[#D4AF37] transition-all cursor-pointer shadow-sm group"
-              title="Kelola Akun & Sesi Workstation"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#1D1B19] border border-[#D4AF37]/40 hover:border-[#D4AF37] transition-all cursor-pointer shadow-sm group whitespace-nowrap"
+              title="Buka Dashboard Superadmin"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34D399]" />
               <span className="text-xs font-semibold text-neutral-200 group-hover:text-white">
@@ -61,7 +63,7 @@ export function Navbar({ scrolled, currentUser, onOpenLogin }: NavbarProps) {
             <button
               type="button"
               onClick={onOpenLogin}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37]/10 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37]/10 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm whitespace-nowrap"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -73,7 +75,7 @@ export function Navbar({ scrolled, currentUser, onOpenLogin }: NavbarProps) {
 
           <a
             href="#contact"
-            className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#D4AF37] text-[#1A1A1A] hover:bg-[#e6c34a] transition-colors shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+            className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#D4AF37] text-[#1A1A1A] hover:bg-[#e6c34a] transition-colors shadow-[0_0_15px_rgba(212,175,55,0.2)] whitespace-nowrap"
           >
             Mulai Sekarang
           </a>
